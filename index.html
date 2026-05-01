@@ -299,8 +299,12 @@
     .radio-waves span {
       display:block; width:3px; border-radius:2px; transform-origin:bottom;
       background:linear-gradient(to top,var(--cr),var(--gd));
-      animation:wave-bounce 1s ease-in-out infinite; opacity:.80;
+      animation:wave-bounce 1s ease-in-out infinite;
+      animation-play-state:paused; /* start paused; JS enables on play */
+      opacity:.55;
+      transform:scaleY(.25); /* resting flat state */
     }
+    .radio-waves.playing span { animation-play-state:running; opacity:.82; }
     .radio-waves span:nth-child(1) { height:10px; animation-delay:0s;   }
     .radio-waves span:nth-child(2) { height:16px; animation-delay:.12s; }
     .radio-waves span:nth-child(3) { height:22px; animation-delay:.24s; }
@@ -309,13 +313,14 @@
     .radio-waves span:nth-child(6) { height:16px; animation-delay:.60s; }
     .radio-waves span:nth-child(7) { height:10px; animation-delay:.72s; }
 
-    /* Listen Live button — same DNA as .play-btn */
+    /* Listen Live toggle button */
     @keyframes radio-glow {
       0%,100% { box-shadow:0 4px 18px rgba(139,0,0,.55),0 0 0 0 rgba(200,164,21,.00),inset 0 1px 0 rgba(255,200,100,.12); }
       50%      { box-shadow:0 6px 26px rgba(139,0,0,.80),0 0 16px 3px rgba(200,164,21,.18),inset 0 1px 0 rgba(255,200,100,.18); }
     }
     .listen-btn {
       position:relative; overflow:hidden; display:block; width:100%; padding:13px 0 12px;
+      -webkit-appearance:none; appearance:none;
       border-radius:4px;
       border-top:2px solid rgba(240,200,80,.65); border-left:2px solid var(--gd);
       border-right:2px solid var(--gd-md); border-bottom:2px solid var(--gd-dk);
@@ -340,6 +345,72 @@
                  inset 0 1px 0 rgba(255,210,100,.24);
     }
     .listen-btn:active { transform:translateY(0); }
+    /* pressed / open state */
+    .listen-btn.open {
+      animation:none;
+      background:linear-gradient(to bottom,#6E0000 0%,#520000 40%,#380000 100%);
+      border-top-color:rgba(200,164,21,.45); border-left-color:var(--gd-md);
+      box-shadow:0 2px 8px rgba(0,0,0,.70),inset 0 2px 6px rgba(0,0,0,.55);
+      transform:translateY(1px);
+    }
+
+    /* ---- radio dropdown player ---- */
+    .radio-player {
+      overflow:hidden; max-height:0; opacity:0; margin-top:0;
+      transition:max-height .38s ease, opacity .28s ease, margin-top .28s ease;
+    }
+    .radio-player.open { max-height:200px; opacity:1; margin-top:14px; }
+
+    .now-playing {
+      background:rgba(0,0,0,.32);
+      border:1px solid rgba(200,164,21,.20); border-radius:3px;
+      padding:10px 12px 12px; margin-bottom:12px; text-align:center;
+    }
+    .np-label {
+      font-family:'Cinzel',serif; font-size:.52rem; letter-spacing:.22em;
+      color:var(--gd-dk); margin-bottom:5px;
+    }
+    .np-title {
+      font-family:'Cinzel',serif; font-size:.88rem; font-weight:700;
+      color:var(--gd); line-height:1.25; margin-bottom:3px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .np-artist {
+      font-family:'Crimson Text',serif; font-size:.80rem; font-style:italic;
+      color:var(--pm-dk);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+
+    .player-controls {
+      display:flex; justify-content:center; align-items:center; gap:8px;
+    }
+    .ctrl-btn {
+      -webkit-appearance:none; appearance:none;
+      background:linear-gradient(to bottom,#3E2610,#281608);
+      border:1px solid rgba(200,164,21,.28); border-radius:4px;
+      color:var(--gd-md); font-size:.90rem;
+      width:38px; height:34px;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer;
+      transition:background .18s, color .15s, border-color .15s, transform .12s;
+      line-height:1;
+    }
+    .ctrl-btn:hover {
+      background:linear-gradient(to bottom,#8B0000,#5E0000);
+      border-color:rgba(200,164,21,.52); color:var(--gd);
+      transform:translateY(-1px);
+    }
+    .ctrl-btn:active { transform:translateY(0); }
+    .ctrl-play {
+      width:46px; height:40px; font-size:1.05rem;
+      background:linear-gradient(to bottom,#C83030,#8B0000,#5E0000);
+      border-color:rgba(200,164,21,.42); color:var(--gd);
+      box-shadow:0 3px 12px rgba(139,0,0,.45);
+    }
+    .ctrl-play:hover {
+      background:linear-gradient(to bottom,#E04040,#A81010,#780000);
+      box-shadow:0 5px 18px rgba(139,0,0,.65);
+    }
 
     /* ---- sidebar: forum announcements ---- */
     .forum-list { padding:6px 15px 4px; }
@@ -481,7 +552,7 @@
     </div>
   </div>
 
-  <!-- LOGO STRIP — drop logo.png next to index.html -->
+  <!-- LOGO STRIP -->
   <div class="logo-strip">
     <img src="logo.png" alt="Marcher Houses – The Borderlands" class="logo-img"
          onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='block';" />
@@ -638,7 +709,7 @@
         </div>
 
         <!-- Marcher Houses Radio widget -->
-        <div class="panel">
+        <div class="panel" id="radio-panel">
           <div class="radio-body">
 
             <!-- pulsing LIVE badge -->
@@ -650,19 +721,41 @@
             <p class="radio-title">Marcher Houses Radio</p>
             <p class="radio-subtitle">Live from the Borderlands</p>
 
-            <!-- animated sound-wave bars -->
-            <div class="radio-waves" aria-hidden="true">
+            <!-- animated sound-wave bars (start flat; animate when playing) -->
+            <div class="radio-waves" id="radio-waves" aria-hidden="true">
               <span></span><span></span><span></span><span></span>
               <span></span><span></span><span></span>
             </div>
 
-            <!-- Listen Live button -->
-            <a href="https://marcherhouses.itch.io/marcher-houses-radio"
-               target="_blank" rel="noopener noreferrer"
-               class="listen-btn">&#9836;&nbsp; Listen Live</a>
+            <!-- Listen Live — toggle button -->
+            <button type="button" class="listen-btn" id="radio-toggle" aria-expanded="false">
+              &#9836;&nbsp; Listen Live &nbsp;&#9660;
+            </button>
+
+            <!-- Inline dropdown player -->
+            <div class="radio-player" id="radio-player" aria-hidden="true">
+
+              <!-- Now playing display -->
+              <div class="now-playing">
+                <p class="np-label">NOW PLAYING</p>
+                <p class="np-title"  id="np-title">Ned the Whinger</p>
+                <p class="np-artist" id="np-artist">Taxes = Dragons</p>
+              </div>
+
+              <!-- Transport controls -->
+              <div class="player-controls">
+                <button type="button" class="ctrl-btn" id="ctrl-prev" aria-label="Previous track">&#9664;&#9664;</button>
+                <button type="button" class="ctrl-btn ctrl-play" id="ctrl-play" aria-label="Play">&#9654;</button>
+                <button type="button" class="ctrl-btn" id="ctrl-next" aria-label="Next track">&#9654;&#9654;</button>
+              </div>
+
+            </div><!-- /radio-player -->
+
+            <!-- hidden audio element -->
+            <audio id="radio-audio" preload="none"></audio>
 
           </div>
-        </div>
+        </div><!-- /radio panel -->
 
         <!-- Forum announcements -->
         <div class="panel">
@@ -759,6 +852,128 @@
       </div>
     </div>
   </div>
+
+  <!-- ============================================================
+       MARCHER HOUSES RADIO — player script
+       Playlist uses royalty-free SoundHelix demo tracks.
+       Swap .src values for your own audio files when ready.
+       ============================================================ -->
+  <script>
+  (function () {
+    'use strict';
+
+    /* ---- playlist ---- */
+    var playlist = [
+      {
+        title:  'Ned the Whinger',
+        artist: 'Taxes = Dragons',
+        src:    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+      },
+      {
+        title:  'The Siege of Dawn',
+        artist: 'The Crimson Choir',
+        src:    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
+      },
+      {
+        title:  "Lord's Lament",
+        artist: 'Bottomsworth & Band',
+        src:    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+      }
+    ];
+
+    var idx      = 0;
+    var isOpen   = false;
+
+    /* ---- element refs ---- */
+    var audio     = document.getElementById('radio-audio');
+    var panel     = document.getElementById('radio-panel');
+    var player    = document.getElementById('radio-player');
+    var toggle    = document.getElementById('radio-toggle');
+    var ctrlPlay  = document.getElementById('ctrl-play');
+    var ctrlPrev  = document.getElementById('ctrl-prev');
+    var ctrlNext  = document.getElementById('ctrl-next');
+    var npTitle   = document.getElementById('np-title');
+    var npArtist  = document.getElementById('np-artist');
+    var waves     = document.getElementById('radio-waves');
+
+    /* ---- helpers ---- */
+    function wrap(i) {
+      return ((i % playlist.length) + playlist.length) % playlist.length;
+    }
+
+    function loadTrack(i, andPlay) {
+      idx = wrap(i);
+      var t = playlist[idx];
+      audio.src        = t.src;
+      npTitle.textContent  = t.title;
+      npArtist.textContent = t.artist;
+      if (andPlay) audio.play().catch(function () {});
+    }
+
+    function syncUI() {
+      var playing = !audio.paused && !audio.ended;
+      ctrlPlay.innerHTML    = playing ? '&#9646;&#9646;' : '&#9654;';
+      ctrlPlay.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+      waves.classList.toggle('playing', playing);
+    }
+
+    function openPlayer() {
+      isOpen = true;
+      player.classList.add('open');
+      player.setAttribute('aria-hidden', 'false');
+      toggle.classList.add('open');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.innerHTML = '&#9836;&nbsp; Now Playing &nbsp;&#9650;';
+      if (!audio.src) loadTrack(0, false);
+    }
+
+    function closePlayer() {
+      isOpen = false;
+      player.classList.remove('open');
+      player.setAttribute('aria-hidden', 'true');
+      toggle.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.innerHTML = '&#9836;&nbsp; Listen Live &nbsp;&#9660;';
+    }
+
+    /* ---- toggle button ---- */
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (isOpen) { closePlayer(); } else { openPlayer(); }
+    });
+
+    /* ---- transport controls ---- */
+    ctrlPrev.addEventListener('click', function () {
+      loadTrack(idx - 1, !audio.paused);
+    });
+
+    ctrlPlay.addEventListener('click', function () {
+      if (audio.paused || audio.ended) {
+        if (!audio.src) loadTrack(0, true);
+        else audio.play().catch(function () {});
+      } else {
+        audio.pause();
+      }
+    });
+
+    ctrlNext.addEventListener('click', function () {
+      loadTrack(idx + 1, !audio.paused);
+    });
+
+    /* ---- audio events ---- */
+    audio.addEventListener('play',   syncUI);
+    audio.addEventListener('pause',  syncUI);
+    audio.addEventListener('ended',  function () { loadTrack(idx + 1, true); });
+
+    /* ---- close on outside click ---- */
+    document.addEventListener('click', function (e) {
+      if (isOpen && !panel.contains(e.target)) {
+        closePlayer();
+      }
+    });
+
+  }());
+  </script>
 
 </body>
 </html>
