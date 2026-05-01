@@ -315,6 +315,19 @@
       font-family:'Crimson Text',serif; font-size:.84rem; font-style:italic;
       color:#E05050; margin-top:10px; text-align:center; display:none;
     }
+    /* two-col name row inside sign-up modal */
+    .form-row { display:flex; gap:12px; margin-bottom:18px; }
+    .form-row .form-field { flex:1; margin-bottom:0; }
+    .form-example {
+      font-family:'Crimson Text',serif; font-size:.82rem; font-style:italic;
+      color:var(--pm-dk); text-align:center; margin-bottom:18px;
+    }
+    .form-example em { font-style:normal; color:var(--gd-md); }
+    @media (max-width:480px) {
+      .form-row { flex-direction:column; gap:0; }
+      .form-row .form-field { margin-bottom:14px; }
+      .form-row .form-field:last-child { margin-bottom:0; }
+    }
 
     /* ================================================================
        SIDEBAR — MARCHER HOUSES RADIO WIDGET
@@ -884,18 +897,26 @@
       </div>
       <div class="modal-body">
         <form id="signup-form" novalidate>
-          <div class="form-field">
-            <label class="form-label" for="signup-name">Your Name</label>
-            <input type="text" class="form-input" id="signup-name"
-                   placeholder="What shall we call you, my lord?" autocomplete="name" />
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-label" for="signup-noble">Your Noble Name</label>
+              <input type="text" class="form-input" id="signup-noble"
+                     placeholder="Lord Gooseworth" autocomplete="given-name" />
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="signup-epithet">Your Epithet</label>
+              <input type="text" class="form-input" id="signup-epithet"
+                     placeholder="the Unpluckable" autocomplete="off" />
+            </div>
           </div>
+          <p class="form-example">Example: <em>&ldquo;Lord Gooseworth the Unpluckable&rdquo;</em></p>
           <div class="form-field">
             <label class="form-label" for="signup-email">Email Address</label>
             <input type="email" class="form-input" id="signup-email"
                    placeholder="your@email.com" autocomplete="email" />
           </div>
           <button type="submit" class="form-submit">Enter the Borderlands</button>
-          <p class="form-error" id="signup-error">Please fill in both fields.</p>
+          <p class="form-error" id="signup-error">Please fill in your noble name and email.</p>
         </form>
         <div class="form-divider">already a lord?</div>
         <p style="text-align:center; font-size:.88rem; margin-top:10px;">
@@ -1004,9 +1025,11 @@
     /* ---- Sign Up form ---- */
     document.getElementById('signup-form').addEventListener('submit', function (e) {
       e.preventDefault();
-      var name  = document.getElementById('signup-name').value.trim();
-      var email = document.getElementById('signup-email').value.trim();
-      if (!name || !email) {
+      var noble   = document.getElementById('signup-noble').value.trim();
+      var epithet = document.getElementById('signup-epithet').value.trim();
+      var email   = document.getElementById('signup-email').value.trim();
+      var name    = epithet ? noble + ' ' + epithet : noble;
+      if (!noble || !email) {
         document.getElementById('signup-error').style.display = 'block';
         return;
       }
