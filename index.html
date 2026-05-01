@@ -738,8 +738,8 @@
               <!-- Now playing display -->
               <div class="now-playing">
                 <p class="np-label">NOW PLAYING</p>
-                <p class="np-title"  id="np-title">Ned the Whinger</p>
-                <p class="np-artist" id="np-artist">Taxes = Dragons</p>
+                <p class="np-title"  id="np-title">Le Chant des Marches Françaises</p>
+                <p class="np-artist" id="np-artist">Marcher Houses Radio</p>
               </div>
 
               <!-- Transport controls -->
@@ -864,21 +864,17 @@
 
     /* ---- playlist ---- */
     var playlist = [
-      {
-        title:  'Ned the Whinger',
-        artist: 'Taxes = Dragons',
-        src:    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
-      },
-      {
-        title:  'The Siege of Dawn',
-        artist: 'The Crimson Choir',
-        src:    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
-      },
-      {
-        title:  "Lord's Lament",
-        artist: 'Bottomsworth & Band',
-        src:    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
-      }
+      { title: 'Le Chant des Marches Françaises', artist: 'Marcher Houses Radio', file: 'Le Chant des Marches Françaises.mp3' },
+      { title: 'Le Maison des Plaisirs Secrets',  artist: 'Marcher Houses Radio', file: 'Le Maison des Plaisirs Secrets.mp3' },
+      { title: 'Marcher Lords',                   artist: 'Marcher Houses Radio', file: 'MARCHER LORDS.mp3' },
+      { title: 'Symphony of the Marcher War',     artist: 'Marcher Houses Radio', file: 'Symphony of the Marcher War.mp3' },
+      { title: "The Bishop's Glorious Tithe",     artist: 'Marcher Houses Radio', file: "The Bishop's Glorious Tithe.mp3" },
+      { title: 'The Finest Establishment',        artist: 'Marcher Houses Radio', file: 'The Finest Establishment.mp3' },
+      { title: 'The Grand Concerto of Lord Gooseworth', artist: 'Marcher Houses Radio', file: 'The Grand Concerto of Lord Gooseworth the Unpluckable (1).mp3' },
+      { title: 'The Grand March of the Marches',  artist: 'Marcher Houses Radio', file: 'The Grand March of the Marches.mp3' },
+      { title: 'The Hymn of the Lord of the March', artist: 'Marcher Houses Radio', file: 'The Hymn of the Lord of the March.mp3' },
+      { title: "The Monks' Holy Edict",           artist: 'Marcher Houses Radio', file: "The Monks' Holy Edict.mp3" },
+      { title: "The Peasants' Overture",          artist: 'Marcher Houses Radio', file: "The Peasants' Overture.mp3" }
     ];
 
     var idx      = 0;
@@ -904,7 +900,7 @@
     function loadTrack(i, andPlay) {
       idx = wrap(i);
       var t = playlist[idx];
-      audio.src        = t.src;
+      audio.src            = t.file;
       npTitle.textContent  = t.title;
       npArtist.textContent = t.artist;
       if (andPlay) audio.play().catch(function () {});
