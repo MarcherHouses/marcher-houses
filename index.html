@@ -205,50 +205,81 @@
 
     /* ---- featured article ---- */
     .feat-wrap {
-      position:relative; height:310px; overflow:hidden;
+      position:relative; height:350px; overflow:hidden;
       background:linear-gradient(148deg,#401808 0%,#780000 55%,#401808 100%);
     }
-    .feat-img { width:100%; height:100%; object-fit:cover; object-position:center 28%; display:block; transition:transform 7s ease; }
+    .feat-img {
+      position:absolute; inset:0;
+      width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block;
+      transition:transform 7s ease;
+    }
     .panel:hover .feat-img { transform:scale(1.03); }
-    .feat-badge { position:absolute; top:14px; right:16px; }
-    .feat-badge img { height:58px; opacity:.80; filter:drop-shadow(0 2px 10px rgba(0,0,0,.90)); }
     .feat-overlay {
       position:absolute; inset:0; pointer-events:none;
       background:
-        linear-gradient(to top,rgba(8,2,0,.97) 0%,rgba(8,2,0,.68) 30%,rgba(8,2,0,.18) 58%,transparent 100%),
-        linear-gradient(to right,rgba(8,2,0,.35) 0%,transparent 55%);
+        linear-gradient(to top, rgba(5,1,0,.97) 0%, rgba(5,1,0,.78) 26%, rgba(5,1,0,.42) 50%, rgba(5,1,0,.16) 70%, transparent 100%),
+        radial-gradient(ellipse at 50% 65%, rgba(0,0,0,.20) 0%, rgba(0,0,0,.55) 100%),
+        linear-gradient(to right, rgba(5,1,0,.45) 0%, transparent 35%),
+        linear-gradient(to left,  rgba(5,1,0,.45) 0%, transparent 35%);
     }
-    .feat-text { position:absolute; bottom:18px; left:20px; right:92px; }
+    /* centered hero content column */
+    .feat-center {
+      position:absolute; inset:0;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding:12px 40px 32px; text-align:center;
+    }
+    .feat-logo {
+      height:102px; margin-bottom:16px;
+      filter:
+        drop-shadow(0 3px 18px rgba(0,0,0,.96))
+        drop-shadow(0 0 44px rgba(200,164,21,.22));
+      transition:filter .35s;
+    }
+    .panel:hover .feat-logo {
+      filter:
+        drop-shadow(0 5px 26px rgba(0,0,0,.98))
+        drop-shadow(0 0 60px rgba(200,164,21,.32));
+    }
+    /* thin gold divider line under logo */
+    .feat-divider {
+      width:120px; height:1px; margin:0 auto 16px;
+      background:linear-gradient(to right, transparent, rgba(200,164,21,.55), transparent);
+    }
+    .feat-text { text-align:center; }
     .feat-text h2 {
-      font-family:'Cinzel',serif; font-size:1.5rem; font-weight:700; color:var(--gd);
-      line-height:1.22; margin-bottom:7px;
-      text-shadow:2px 2px 10px rgba(0,0,0,.95),0 0 22px rgba(200,164,21,.22);
+      font-family:'Cinzel',serif; font-size:1.55rem; font-weight:700; color:var(--gd);
+      line-height:1.22; margin-bottom:8px;
+      text-shadow:2px 2px 14px rgba(0,0,0,.98), 0 0 30px rgba(200,164,21,.26);
+      letter-spacing:.04em;
     }
-    .feat-text p { font-size:.94rem; color:var(--pm); opacity:.85; text-shadow:1px 1px 5px rgba(0,0,0,.92); }
+    .feat-text p {
+      font-size:.95rem; color:var(--pm); opacity:.88;
+      text-shadow:1px 1px 6px rgba(0,0,0,.96);
+      margin-bottom:20px;
+    }
     .feat-read-more {
-      position:absolute; bottom:20px; right:18px;
-      padding:5px 14px; border-radius:3px;
+      display:inline-block; padding:7px 22px; border-radius:3px;
       background:linear-gradient(to bottom,#4A1E0A 0%,#301206 50%,#1C0800 100%);
-      border-top:1px solid rgba(200,155,45,.42); border-left:1px solid rgba(175,130,35,.28);
-      border-right:1px solid rgba(0,0,0,.60); border-bottom:2px solid rgba(0,0,0,.70);
-      color:var(--gd-md); font-size:.82rem; font-style:italic; text-decoration:none;
+      border-top:1px solid rgba(200,155,45,.44); border-left:1px solid rgba(175,130,35,.30);
+      border-right:1px solid rgba(0,0,0,.62); border-bottom:2px solid rgba(0,0,0,.72);
+      color:var(--gd-md); font-size:.84rem; font-style:italic; text-decoration:none;
       text-shadow:1px 1px 4px rgba(0,0,0,.92);
       box-shadow:
-        inset 0 1px 0 rgba(255,215,110,.12),
-        inset 0 -1px 3px rgba(0,0,0,.40),
-        0 3px 8px rgba(0,0,0,.55),
-        0 1px 3px rgba(0,0,0,.38);
+        inset 0 1px 0 rgba(255,215,110,.13),
+        inset 0 -1px 3px rgba(0,0,0,.42),
+        0 3px 10px rgba(0,0,0,.58),
+        0 1px 3px rgba(0,0,0,.40);
       transition:all .15s;
     }
     .feat-read-more:hover {
       background:linear-gradient(to bottom,#6E2C10 0%,#4A1C06 50%,#2C0A00 100%);
-      border-top-color:rgba(220,175,55,.58); color:var(--gd);
+      border-top-color:rgba(220,175,55,.60); color:var(--gd);
       transform:translateY(-1px);
       box-shadow:
-        inset 0 1px 0 rgba(255,225,130,.18),
-        inset 0 -1px 3px rgba(0,0,0,.48),
-        0 5px 12px rgba(0,0,0,.62),
-        0 0 10px rgba(200,164,21,.10);
+        inset 0 1px 0 rgba(255,225,130,.20),
+        inset 0 -1px 3px rgba(0,0,0,.50),
+        0 5px 14px rgba(0,0,0,.65),
+        0 0 12px rgba(200,164,21,.12);
     }
 
     /* ---- news cards ---- */
@@ -747,7 +778,12 @@
 
     /* ---- responsive ---- */
     @media (max-width:540px) {
-      .feat-wrap { height:220px; } .feat-text h2 { font-size:1.1rem; }
+      .feat-wrap { height:260px; }
+      .feat-logo { height:72px; margin-bottom:10px; }
+      .feat-divider { margin-bottom:10px; }
+      .feat-text h2 { font-size:1.1rem; }
+      .feat-text p { font-size:.86rem; margin-bottom:14px; }
+      .feat-center { padding:8px 20px 22px; }
       .play-btn { font-size:1.35rem; padding:15px 0; }
       #logo-fallback h1 { font-size:1.9rem; }
       .news-card { padding:14px 14px; }
@@ -808,15 +844,17 @@
           <div class="feat-wrap">
             <img src="background.jpg" alt="The Borderlands" class="feat-img"
                  onerror="this.style.display='none';" />
-            <div class="feat-badge">
-              <img src="logo.png" alt="" onerror="this.style.display='none';" />
-            </div>
             <div class="feat-overlay"></div>
-            <div class="feat-text">
-              <h2>Welcome to the Borderlands</h2>
-              <p>Build your house, forge alliances, and carve your legend into the stone of history.</p>
+            <div class="feat-center">
+              <img src="logo.png" alt="Marcher Houses – The Borderlands" class="feat-logo"
+                   onerror="this.style.display='none';" />
+              <div class="feat-divider"></div>
+              <div class="feat-text">
+                <h2>Welcome to the Borderlands</h2>
+                <p>Build your house, forge alliances, and carve your legend into the stone of history.</p>
+                <a href="#" class="feat-read-more">Read More</a>
+              </div>
             </div>
-            <a href="#" class="feat-read-more">Read More</a>
           </div>
         </div>
 
